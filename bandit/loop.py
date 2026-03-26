@@ -215,7 +215,7 @@ class BanditLoop:
         if context.log_writer is not None:
             try:
                 save_jsonl({
-                    "event": "selection",
+                    "type": "selection",
                     "iteration": state.global_iteration,
                     "arm_id": selection.arm_id,
                     "selected_by": selection.selected_by,
@@ -376,14 +376,11 @@ class BanditLoop:
             except Exception:
                 pass
 
-        # Increment global iteration
-        state.global_iteration += 1
-        state.metadata["last_updated"] = time.time()
         context.bandit_state = state
 
         elapsed = time.time() - t_start
         return IterationResult(
-            iteration=state.global_iteration - 1,
+            iteration=context.bandit_state.global_iteration - 1 if self._get_posterior() is not None else context.bandit_state.global_iteration,
             arm_selected=selection.arm_id,
             dispatch_path=dispatch_result.dispatch_path,
             delta=dispatch_result.delta,

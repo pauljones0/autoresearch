@@ -174,7 +174,7 @@ class AdaptiveBanditPipeline:
         )
 
         # Log warm-start
-        self.log_writer.log_warm_start(self.state)
+        self.log_writer.log_warm_start(self.state.to_dict())
 
         # Save state
         self.state_manager.save(self.state, self.state_path)
@@ -205,8 +205,8 @@ class AdaptiveBanditPipeline:
                 )
                 for change in changes:
                     self.log_writer.log_config_change(
-                        field=change, old_value="", new_value="",
-                        changed_by="operator"
+                        parameter=change, old_value="", new_value="",
+                        reason="operator"
                     )
             except Exception:
                 pass
