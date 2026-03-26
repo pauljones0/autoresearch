@@ -147,13 +147,13 @@ class SurrogateTriagePipeline:
         self.router = PaperCandidateRouter()
         self.journal_enricher = PaperJournalEnricher()
         self.feedback_loop = SurrogateFeedbackLoop(
-            data_dir=self.data_dir
+            feedback_path=os.path.join(self.data_dir, "surrogate_feedback.jsonl")
         )
         self.extraction_tracker = ExtractionQualityTracker(
-            data_dir=self.data_dir
+            quality_path=os.path.join(self.data_dir, "extraction_quality.json")
         )
         self.source_tracker = PaperSourceTracker(
-            path=os.path.join(self.data_dir, "paper_source_quality.json")
+            quality_path=os.path.join(self.data_dir, "paper_source_quality.json")
         )
         self.failure_bridge = FailureMiningBridge()
 

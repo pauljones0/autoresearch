@@ -133,7 +133,7 @@ class GPUKernelPipeline:
         )
         os.makedirs(self.data_dir, exist_ok=True)
 
-        with open(self.train_path) as f:
+        with open(self.train_path, encoding="utf-8") as f:
             self._base_source = f.read()
 
         # Phase 1.1: Profiling
