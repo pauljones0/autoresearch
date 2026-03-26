@@ -3,7 +3,7 @@ KernelConstraintSpecialist: generates kernel-specific constraint templates
 from failure patterns and kernel journal entries.
 """
 
-from ...model_scientist.schemas import FailurePattern, JournalEntry
+from model_scientist.schemas import FailurePattern, JournalEntry
 
 
 class KernelConstraintSpecialist:

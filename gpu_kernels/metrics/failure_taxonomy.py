@@ -7,7 +7,7 @@ Extends the 23-element feature vector to 28 elements.
 import math
 import re
 
-from ...model_scientist.schemas import JournalEntry, FailureFeatures
+from model_scientist.schemas import JournalEntry, FailureFeatures
 
 
 # Kernel-specific failure types

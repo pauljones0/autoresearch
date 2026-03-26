@@ -6,7 +6,7 @@ the model scientist metric evolution system.
 import math
 import time
 
-from ...model_scientist.schemas import MetricDefinition
+from model_scientist.schemas import MetricDefinition
 from gpu_kernels.schemas import KernelConfigEntry
 
 

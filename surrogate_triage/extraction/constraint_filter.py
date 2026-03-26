@@ -10,7 +10,7 @@ import re
 from surrogate_triage.schemas import SyntheticDiff
 
 # Import FailureExtractor for feature vector extraction
-from ...model_scientist.failure_mining.extractor import (
+from model_scientist.failure_mining.extractor import (
     FailureExtractor,
     _CATEGORY_KEYWORDS as _FAILURE_CATEGORY_KEYWORDS,
     _classify_category,

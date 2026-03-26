@@ -477,6 +477,4 @@ class ModelScientistLoop:
     def update_diagnostics(self, report: DiagnosticsReport):
         """Update the latest diagnostics report (call after each training run)."""
         self._last_diagnostics = report
-ch training run)."""
-        self._last_diagnostics = report
-d(report)
+        self._diagnostics_history.append(report)

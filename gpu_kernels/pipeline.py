@@ -490,10 +490,3 @@ class GPUKernelPipeline:
     def run_health_audit(self) -> dict:
         """Run cross-system health audit."""
         return self.health_auditor.audit()
-s.path.join(self.data_dir, "kernel_dashboard.html")
-        return self.dashboard.render_html(path)
-
-    def run_health_audit(self) -> dict:
-        """Run cross-system health audit."""
-        return self.health_auditor.audit()
-t()

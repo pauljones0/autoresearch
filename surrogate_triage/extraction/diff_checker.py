@@ -10,7 +10,7 @@ import re
 from surrogate_triage.schemas import SyntheticDiff
 
 # Import DiffParser for decomposition check
-from ...model_scientist.ablation.diff_parser import DiffParser
+from model_scientist.ablation.diff_parser import DiffParser
 
 
 def _apply_unified_diff(diff_text: str, base_source: str) -> str | None:

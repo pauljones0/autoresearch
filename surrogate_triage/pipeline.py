@@ -544,6 +544,3 @@ class SurrogateTriagePipeline:
                 os.path.join(self.data_dir, "papers_index.jsonl")
             )),
         }
-"papers_index.jsonl")
-            )),
-        }
