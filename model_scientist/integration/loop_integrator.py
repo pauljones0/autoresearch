@@ -12,6 +12,10 @@ propose → train → evaluate → keep/discard cycle with:
   6. Periodic metric evolution (critic + correlator + promoter)
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 import os
 import time
 import subprocess

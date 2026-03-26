@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm /c/Users/bethe/.claude/scheduled-tasks/ralph-loop/SKILL.md)",
+      "Bash(rmdir /c/Users/bethe/.claude/scheduled-tasks/ralph-loop)",
+      "Bash(find /c/Users/bethe/.claude/ -name install-counts-cache.json -o -name installed.json -o -name *installed* -o -name *registry*)",
+      "Bash(for cmd:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/bethe/Downloads/autoresearch/**)",
+      "Bash(done)",
+      "Bash(find /c/Users/bethe/.claude -type f \\\\\\(-name *plugin* -o -name *skill* \\\\\\) ! -path */node_modules/* ! -path */marketplaces/*)",
+      "Bash(claude plugins:*)",
+      "Skill(ralph-loop:ralph-loop)",
+      "Skill(ralph-loop:ralph-loop:*)",
+      "mcp__b75fba74-0181-43aa-bbe9-cdf952a6f433__gcal_create_event",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}

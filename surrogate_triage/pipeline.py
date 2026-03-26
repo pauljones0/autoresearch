@@ -27,6 +27,10 @@ Usage:
     report = pipeline.run_weekly_cycle()
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 import os
 import time
 
@@ -247,8 +251,8 @@ class SurrogateTriagePipeline:
                 relevant,
                 source_quality_path=os.path.join(self.data_dir, "paper_source_quality.json"),
             )
-        except Exception:
-            pass
+        except Exception as e:
+            logger.exception(e)
 
         # 5. Extract techniques
         all_techniques = []
@@ -412,24 +416,24 @@ class SurrogateTriagePipeline:
                     paper_metadata=candidate_dict,
                     journal_path=self.journal_path,
                 )
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
         # Update base source if accepted
         if result.get("verdict") == "accepted":
             try:
                 with open(self.train_path) as f:
                     self._base_source = f.read()
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
         # Update ceiling monitor
         try:
             journal_path = os.path.join(self.data_dir, "..", "hypothesis_journal.jsonl")
             entries = load_jsonl(journal_path)
             self.ceiling_monitor.update(entries)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.exception(e)
 
         return result
 
@@ -467,8 +471,8 @@ class SurrogateTriagePipeline:
                 actuals = [f[1] for f in feedback]
                 sources = ["paper"] * len(feedback)  # TODO: track actual sources
                 self.calibration.calibrate(predictions, actuals, sources)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.exception(e)
 
         # 3. Propose new metrics to Model Scientist
         if self.model_scientist:
@@ -482,8 +486,8 @@ class SurrogateTriagePipeline:
                 proposals = self.metric_proposer.propose_metrics(triage_stats)
                 if proposals:
                     print(f"[SurrogateTriage] Proposed {len(proposals)} new metrics")
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
         # 4. Collect meta-learning snapshot
         try:
@@ -491,15 +495,15 @@ class SurrogateTriagePipeline:
             try:
                 from model_scientist.journal.reader import JournalReader
                 journal_reader = JournalReader()
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
             snapshot = self.meta_monitor.collect_snapshot(
                 journal_reader=journal_reader,
             )
             self.meta_monitor.record_snapshot(snapshot)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.exception(e)
 
         # 5. Generate weekly report
         try:

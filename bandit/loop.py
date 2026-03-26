@@ -2,6 +2,10 @@
 Main bandit loop: orchestrates one iteration of the adaptive bandit pipeline.
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 import time
 import copy
 
@@ -173,8 +177,8 @@ class BanditLoop:
                 _, next_regime = regime_mgr.check_transition(state, context.journal_path)
                 if next_regime:
                     state.regime = next_regime
-            except Exception:
-                pass  # Continue under current regime
+            except Exception as e:
+                logger.exception(e)  # Continue under current regime
 
         # 2. If no_bandit, delegate to scheduler fallback
         if state.regime == "no_bandit":
@@ -222,8 +226,8 @@ class BanditLoop:
                     "dispatch_path": selection.dispatch_path,
                     "timestamp": time.time(),
                 }, getattr(context.log_writer, "path", "bandit_log.jsonl"))
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
         # 6. Dispatch
         dispatch_result = None
@@ -343,8 +347,8 @@ class BanditLoop:
                 if reheat_result is not None:
                     state = reheat_result if isinstance(reheat_result, BanditState) else state
                     reheat_triggered = True
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
         # 10. Rollback safety net
         rollback_triggered = False
@@ -354,8 +358,8 @@ class BanditLoop:
                 rollback_result = rollback_net.check_and_rollback(state, dispatch_result)
                 if rollback_result is not None and hasattr(rollback_result, "rolled_back"):
                     rollback_triggered = rollback_result.rolled_back
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
         # 11. Posterior health check
         health_alerts = []
@@ -366,15 +370,15 @@ class BanditLoop:
                 if alerts:
                     health_alerts = [a.to_dict() if hasattr(a, "to_dict") else a
                                      for a in alerts]
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
         # 12. Decay boosts
         if booster is not None:
             try:
                 state = booster.decay_all_boosts(state)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
         context.bandit_state = state
 

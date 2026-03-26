@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BanditState",
+  "description": "Schema for strategy_state.json used by the adaptive bandit pipeline.",
+  "type": "object",
+  "required": ["arms", "global_iteration", "regime"],
+  "properties": {
+    "arms": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["alpha", "beta", "temperature"],
+        "properties": {
+          "alpha": { "type": "number", "minimum": 1 },
+          "beta": { "type": "number", "minimum": 1 },
+          "temperature": { "type": "number", "minimum": 0 },
+          "consecutive_failures": { "type": "integer", "minimum": 0 },
+          "last_selected": { "type": "number" },
+          "total_attempts": { "type": "integer", "minimum": 0 },
+          "total_successes": { "type": "integer", "minimum": 0 },
+          "diagnostics_boost": { "type": "number" },
+          "constraint_density": { "type": "number" },
+          "source_type": { "type": "string", "enum": ["internal", "paper", "kernel"] },
+          "last_reheat": { "type": "number" },
+          "reheat_count": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "global_iteration": { "type": "integer", "minimum": 0 },
+    "T_base": { "type": "number", "exclusiveMinimum": 0 },
+    "reheat_factor": { "type": "number", "minimum": 1 },
+    "K_reheat_threshold": { "type": "integer", "minimum": 1 },
+    "min_temperature": { "type": "number", "minimum": 0 },
+    "exploration_floor": { "type": "number", "minimum": 0, "maximum": 1 },
+    "regime": { "type": "string", "enum": ["no_bandit", "conservative_bandit", "full_bandit"] },
+    "last_regime_change": { "type": "number" },
+    "paper_preference_ratio": { "type": "number", "minimum": 0, "maximum": 1 },
+    "delayed_corrections": { "type": "array" },
+    "enable_rollback_safety": { "type": "boolean" },
+    "enable_auto_tuning": { "type": "boolean" },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created_at": { "type": "number" },
+        "last_updated": { "type": "number" },
+        "schema_version": { "type": "string" },
+        "warm_start_source": { "type": "string" },
+        "warm_start_entries": { "type": "integer" }
+      }
+    },
+    "_checksum": { "type": "string" }
+  }
+}

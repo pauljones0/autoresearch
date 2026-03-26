@@ -33,6 +33,10 @@ Usage:
     validation = pipeline.run_extended_validation()
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 import os
 import time
 import json
@@ -457,8 +461,8 @@ class GPUKernelPipeline:
                 # Attempt recovery
                 try:
                     recovery = self.auto_recovery.attempt_recovery(kid, "runtime_divergence")
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.exception(e)
             else:
                 print(f"[GPUKernels] WARNING: kernel {kid} — divergence detected")
 

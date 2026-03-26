@@ -8,10 +8,7 @@ import difflib
 import re
 from dataclasses import dataclass, field
 
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-from model_scientist.schemas import ModificationComponent
+from ..schemas import ModificationComponent
 
 
 # Section markers in train.py used for category classification

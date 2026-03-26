@@ -10,6 +10,10 @@ Wires all bandit components together and exposes high-level methods:
   get_html_status()  — HTML dashboard string
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 import os
 import time
 import random as _random
@@ -154,8 +158,8 @@ class AdaptiveBanditPipeline:
                 issues = validate_state(self.state)
                 if not issues:
                     return self.state
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
         # Warm-start from journal
         self.state = self.run_warm_start()
@@ -208,8 +212,8 @@ class AdaptiveBanditPipeline:
                         parameter=change, old_value="", new_value="",
                         reason="operator"
                     )
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
         # Build loop context
         context = LoopContext(
@@ -246,8 +250,8 @@ class AdaptiveBanditPipeline:
         if os.path.exists(self.state_path):
             try:
                 self.state = self.state_manager.load(self.state_path)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
         # Periodic tasks
         if self.state.global_iteration % 10 == 0:
@@ -263,16 +267,16 @@ class AdaptiveBanditPipeline:
             for alert in alerts:
                 if alert.severity == "critical":
                     pass  # Would trigger operator notification
-        except Exception:
-            pass
+        except Exception as e:
+            logger.exception(e)
 
         # Regime change detection
         try:
             events = self.regime_detector.detect(
                 self.state, self.log_path
             )
-        except Exception:
-            pass
+        except Exception as e:
+            logger.exception(e)
 
         # Auto-tuner (every 100 iterations)
         if self.state.global_iteration % 100 == 0 and self.state.global_iteration > 0:
@@ -285,16 +289,16 @@ class AdaptiveBanditPipeline:
                         if rec.auto_applicable and rec.confidence == "high":
                             setattr(self.state, rec.parameter, rec.recommended_value)
                     self.state_manager.save(self.state, self.state_path)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.exception(e)
 
         # Compute bandit metrics
         try:
             metrics = self.metric_computer.compute_all(
                 self.state, self.log_path
             )
-        except Exception:
-            pass
+        except Exception as e:
+            logger.exception(e)
 
     # ------------------------------------------------------------------
     # A/B Testing

@@ -2,6 +2,10 @@
 Meta-Autoresearch Pipeline - Top-level Orchestrator
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 import os
 import time
 
