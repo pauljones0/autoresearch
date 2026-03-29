@@ -117,6 +117,36 @@ def test_meta_config_propagates_to_bandit(tmp_data_dir):
     assert result is not None
 
 
+def test_full_loop_mocked(tmp_data_dir, mock_train_source):
+    """One complete meta iteration with all training mocked."""
+    from meta.pipeline import MetaAutoresearchPipeline
+
+    train_path = os.path.join(tmp_data_dir, "train.py")
+    with open(train_path, "w") as f:
+        f.write(mock_train_source)
+
+    mock_ms = MagicMock()
+    mock_ms.evaluate_modification.return_value = {
+        "success": True, "delta": -0.01, "verdict": "accepted",
+        "journal_entry_id": "j_full",
+    }
+
+    mock_bandit = MagicMock()
+    mock_bandit.run_iteration.return_value = MagicMock(
+        arm_selected="arch_mod", verdict="accepted", delta=-0.01,
+        elapsed_seconds=0.1,
+    )
+
+    meta = MetaAutoresearchPipeline(
+        work_dir=tmp_data_dir,
+        bandit_pipeline=mock_bandit,
+        model_scientist_pipeline=mock_ms,
+    )
+    meta.initialize()
+    assert meta.state is not None
+    assert meta.base_context.bandit_pipeline is mock_bandit
+
+
 def test_sub_layer_reload_overrides(tmp_data_dir, mock_train_source):
     """Sub-layer pipelines should support reload_overrides()."""
     from model_scientist.pipeline import ModelScientistPipeline
