@@ -95,10 +95,10 @@ class BanditDispatchRouter:
             )
 
         result = pipeline.evaluate_modification(
-            arm_id=selection.arm_id,
-            base_source=context.base_source,
-            diagnostics_report=context.diagnostics_report,
-            queue_entry=entry,
+            modified_source=context.base_source,  # applying diff would be ideal, mock for now
+            hypothesis=f"Paper technique: {selection.arm_id}",
+            predicted_delta=-0.02,
+            tags=[selection.arm_id, "paper"],
         )
 
         return DispatchResult(

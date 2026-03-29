@@ -35,15 +35,13 @@ class CeilingMonitorBanditBridge:
 
             if arm.source_type == "paper" and paper_trend > 0:
                 # Positive trend: paper contributions are increasing,
-                # boost this arm's alpha to encourage more selection
+                # boost diagnostics_boost (not alpha) to preserve evidence conservation
                 boost = min(paper_trend * 2.0, 1.0)
-                arm.alpha += boost
                 arm.diagnostics_boost += boost
 
             elif arm.source_type == "kernel" and kernel_trend > 0:
                 # Positive trend: kernel contributions are increasing
                 boost = min(kernel_trend * 2.0, 1.0)
-                arm.alpha += boost
                 arm.diagnostics_boost += boost
 
         return state

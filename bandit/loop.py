@@ -20,17 +20,29 @@ from .schemas import (
 class BanditLoop:
     """Orchestrates a single bandit iteration through all pipeline stages."""
 
-    def __init__(self):
-        self._sampler = None
-        self._booster = None
-        self._dispatcher = None
-        self._acceptance = None
-        self._posterior = None
-        self._reheat = None
-        self._rollback = None
-        self._health = None
-        self._regime = None
-        self._temp_deriver = None
+    def __init__(
+        self,
+        sampler=None,
+        booster=None,
+        dispatcher=None,
+        acceptance=None,
+        posterior=None,
+        reheat=None,
+        rollback=None,
+        health=None,
+        regime=None,
+        temp_deriver=None,
+    ):
+        self._sampler = sampler
+        self._booster = booster
+        self._dispatcher = dispatcher
+        self._acceptance = acceptance
+        self._posterior = posterior
+        self._reheat = reheat
+        self._rollback = rollback
+        self._health = health
+        self._regime = regime
+        self._temp_deriver = temp_deriver
 
     # ------------------------------------------------------------------
     # Lazy imports to avoid circular dependencies with Phase 2/3 modules

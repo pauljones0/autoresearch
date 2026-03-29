@@ -123,7 +123,18 @@ class AdaptiveBanditPipeline:
         self.regime_detector = RegimeChangeDetector()
         self.ceiling_bridge = CeilingMonitorBanditBridge()
 
-        self.bandit_loop = BanditLoop()
+        self.bandit_loop = BanditLoop(
+            sampler=self.sampler,
+            booster=self.booster,
+            dispatcher=self.dispatcher,
+            acceptance=self.acceptance_engine,
+            posterior=self.updater,
+            reheat=self.reheat_engine,
+            rollback=self.rollback_net,
+            health=self.health_checker,
+            regime=self.regime_manager,
+            temp_deriver=self.temp_deriver,
+        )
         self.coordinator = ThreeSystemStateCoordinator()
         self.fallback_handler = GracefulDegradationHandler()
         self.ab_orchestrator = ABTestOrchestrator()

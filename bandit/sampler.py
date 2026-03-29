@@ -67,10 +67,19 @@ class ThompsonSamplerEngine:
         avg_floor = sum(floors.values()) / max(len(floors), 1)
         exploration_prob = min(avg_floor * n_arms, 1.0)
 
+        # Track samples across all paths for logging
+        samples = {}
+
         max_retries = 3
         for retry in range(max_retries + 1):
             # Decide exploration vs exploitation
             if rng.random() < exploration_prob:
+                # Still compute samples for logging even on exploration path
+                for arm_id in arm_ids:
+                    arm = state.arms[arm_id]
+                    a = max(arm.alpha + arm.diagnostics_boost, 0.01)
+                    b = max(arm.beta, 0.01)
+                    samples[arm_id] = rng.betavariate(a, b)
                 selected_id = rng.choice(arm_ids)
                 selected_by = "exploration_floor"
             else:
@@ -106,15 +115,8 @@ class ThompsonSamplerEngine:
             else:
                 break
 
-        # Build sample values for logging
-        sample_values = {}
-        for arm_id in arm_ids:
-            arm = state.arms[arm_id]
-            a = arm.alpha + arm.diagnostics_boost
-            b = arm.beta
-            a = max(a, 0.01)
-            b = max(b, 0.01)
-            sample_values[arm_id] = rng.betavariate(a, b)
+        # Use actual selection samples for logging
+        sample_values = samples
         sample_values[selected_id] = sample_values.get(selected_id, 0.0)
 
         # Determine dispatch path from source_type
