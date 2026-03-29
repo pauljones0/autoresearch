@@ -61,16 +61,14 @@ class DivergenceWatcher:
         )
         drop = bl_mean - most_recent_ir
 
-        # Soft-reset posteriors
-        self._soft_reset_posteriors(meta_state)
-
+        # Return mutation instructions instead of mutating state directly
         return DivergenceAlert(
             triggered=True,
             current_ir=most_recent_ir,
             baseline_ir=bl_mean,
             drop_magnitude=drop,
             windows_below_threshold=consecutive,
-            recommendation="re-enter active mode: IR has dropped significantly below baseline",
+            recommendation="soft_reset_posteriors: multiply all alpha/beta by 0.5 and re-enter active mode",
         )
 
     def _soft_reset_posteriors(self, meta_state: MetaBanditState) -> None:

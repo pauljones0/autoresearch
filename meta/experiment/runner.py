@@ -69,10 +69,10 @@ class MetaExperimentRunner:
         # 4. Run inner-loop iterations and collect deltas
         raw_deltas = self._run_inner_loop(context, experiment_length)
 
-        # 5. Compute improvement rate
-        n_improved = sum(1 for d in raw_deltas if d > 0)
+        # 5. Compute improvement rate (negative delta = improvement in val_bpb)
+        n_improved = sum(1 for d in raw_deltas if d < 0)
         improvement_rate = n_improved / len(raw_deltas) if raw_deltas else 0.0
-        n_accepted = sum(1 for d in raw_deltas if d >= 0)
+        n_accepted = sum(1 for d in raw_deltas if d <= 0)
         acceptance_rate = n_accepted / len(raw_deltas) if raw_deltas else 0.0
 
         # 6. Restore best config

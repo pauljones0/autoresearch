@@ -83,9 +83,11 @@ class TransferValidator:
         return [base + rng.gauss(0, 0.01) for _ in range(n)]
 
     def _run_real(self, context: MetaContext, param_override, n: int) -> list:
-        """Execute against real pipelines (stub for integration)."""
-        # To be wired up when pipelines are available
-        return [0.0] * n
+        """Execute against real pipelines."""
+        raise NotImplementedError(
+            "_run_real requires wired sub-layer pipelines via MetaContext. "
+            "Override in a subclass or ensure context.bandit_pipeline is set."
+        )
 
     def _simple_p_value(self, baseline: list, treatment: list) -> float:
         """Compute an approximate two-sample t-test p-value (stdlib only)."""

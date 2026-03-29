@@ -177,6 +177,12 @@ class MetaAutoresearchPipeline:
                 param_id=p.param_id, variants=pv,
                 variant_posteriors=posteriors, current_best=p.default_value)
         self.state_manager.save(self.state, self.state_path)
+
+        # Update comparator with actual default config
+        self.defaults_comparator = DefaultsVsMetaComparator(
+            self.state, default_config, all_params
+        )
+
         return self.state
 
     def run_baselines(self, n_runs=3, n_iterations=100):
