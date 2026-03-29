@@ -56,6 +56,38 @@ class JournalWriter:
             finally:
                 fcntl.flock(f.fileno(), fcntl.LOCK_UN)
 
+    def update_entry(self, entry_id: str, **kwargs) -> JournalEntry:
+        """Append a follow-up entry referencing an original entry ID.
+
+        Since the journal is append-only JSONL, updates are recorded as new
+        entries with type='update' that reference the original entry.
+
+        Args:
+            entry_id: The ID of the original entry being updated.
+            **kwargs: Fields to record in the update entry.
+
+        Returns:
+            The follow-up JournalEntry that was written.
+        """
+        update_data = {
+            "type": "update",
+            "references_entry": entry_id,
+            **kwargs,
+        }
+        entry = JournalEntry(
+            id=generate_entry_id(),
+            timestamp=time.time(),
+            hypothesis=f"Update to {entry_id}",
+            predicted_delta=kwargs.get("predicted_delta", 0.0),
+            actual_delta=kwargs.get("actual_delta", 0.0),
+            modification_diff="",
+            verdict=kwargs.get("verdict", "update"),
+            diagnostics_summary=update_data,
+            tags=["update", entry_id],
+        )
+        self._write_entry(entry)
+        return entry
+
     def log_experiment(
         self,
         hypothesis: str,

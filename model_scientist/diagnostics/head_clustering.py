@@ -43,6 +43,16 @@ class HeadClusterer:
             list of (q, k) tensors per layer, each (B, T, n_head, head_dim)
         """
         raw = model._orig_mod if hasattr(model, "_orig_mod") else model
+
+        # Architecture version check
+        required_attrs = ["config", "cos", "sin", "transformer"]
+        missing = [a for a in required_attrs if not hasattr(raw, a)]
+        if missing:
+            raise AttributeError(
+                f"Model is missing required attributes for head clustering: {missing}. "
+                f"Ensure the model matches the expected GPT architecture from train.py."
+            )
+
         config = raw.config
         B, T = x.shape
 

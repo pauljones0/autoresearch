@@ -66,6 +66,15 @@ class AttentionAnalyzer:
         if hasattr(model, "_orig_mod"):
             raw_model = model._orig_mod
 
+        # Architecture version check — fail loudly on mismatch
+        required_attrs = ["config", "cos", "sin", "transformer", "resid_lambdas", "window_sizes"]
+        missing = [a for a in required_attrs if not hasattr(raw_model, a)]
+        if missing:
+            raise AttributeError(
+                f"Model is missing required attributes for attention analysis: {missing}. "
+                f"Ensure the model matches the expected GPT architecture from train.py."
+            )
+
         # Truncate to keep memory reasonable
         B = min(sample_x.size(0), self.max_batch)
         T = min(sample_x.size(1), self.max_seq_len)

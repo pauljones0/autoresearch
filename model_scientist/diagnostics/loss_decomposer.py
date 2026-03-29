@@ -109,10 +109,14 @@ class LossDecomposer:
         device = batch_x.device
         vocab_size = token_frequencies.size(0)
 
-        # Compute per-token losses
+        # Compute per-token losses via logits + cross-entropy
+        # (model.forward may not support reduction="none")
         with torch.amp.autocast(device_type="cuda", dtype=torch.bfloat16):
-            loss_per_token = model(batch_x, batch_y, reduction="none")  # (B, T)
-        loss_flat = loss_per_token.float().view(-1)
+            logits = model(batch_x)  # (B, T, vocab_size)
+        logits_flat = logits.float().view(-1, logits.size(-1))
+        loss_flat = F.cross_entropy(
+            logits_flat, batch_y.view(-1).clamp(min=0), reduction="none"
+        )
         y_flat = batch_y.view(-1)
 
         # Build rank map and bucket assignments
