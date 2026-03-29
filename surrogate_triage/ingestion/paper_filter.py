@@ -324,6 +324,15 @@ class PaperFilter:
         if threshold is None:
             threshold = self.threshold
 
+        # Normalize inputs to PaperMetadata objects
+        normalized = []
+        for p in papers:
+            if isinstance(p, dict):
+                normalized.append(PaperMetadata.from_dict(p))
+            else:
+                normalized.append(p)
+        papers = normalized
+
         relevant = []
         filtered = []
 

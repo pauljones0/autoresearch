@@ -264,6 +264,19 @@ class SurrogateTriagePipeline:
                 continue
         stats["techniques_extracted"] = len(all_techniques)
 
+        # 5b. Validate extracted techniques
+        validated_techniques = []
+        for technique in all_techniques:
+            try:
+                result = self.extraction_validator.validate(technique)
+                is_valid = result if isinstance(result, bool) else (result[0] if isinstance(result, tuple) else True)
+                if is_valid:
+                    validated_techniques.append(technique)
+            except Exception as e:
+                logger.exception(e)
+                validated_techniques.append(technique)  # keep on validator error
+        all_techniques = validated_techniques
+
         # 6. Deduplicate
         all_techniques = self.deduplicator.deduplicate(all_techniques)
         journal_path = os.path.join(self.data_dir, "..", "hypothesis_journal.jsonl")
@@ -288,6 +301,15 @@ class SurrogateTriagePipeline:
             except Exception:
                 continue
         stats["diffs_generated"] = len(all_diffs)
+
+        # 7b. Apply constraint pre-filter
+        try:
+            filtered_diffs = self.constraint_filter.filter_batch(
+                all_diffs, constraints=[], diagnostics_snapshot=diagnostics_dict or {}
+            )
+            all_diffs = filtered_diffs if filtered_diffs is not None else all_diffs
+        except Exception as e:
+            logger.exception(e)
 
         # 8. Check applicability
         valid_diffs = []
@@ -532,6 +554,14 @@ class SurrogateTriagePipeline:
         self.surrogate_trainer.save(model_path)
         self._surrogate_trained = True
         print(f"[SurrogateTriage] Surrogate trained on {len(examples)} examples: {metrics}")
+
+        # Check for feature drift
+        try:
+            drift_result = self.drift_detector.check(examples)
+            if drift_result and (drift_result if isinstance(drift_result, bool) else getattr(drift_result, "drifted", False)):
+                logger.warning("Feature drift detected after surrogate retraining")
+        except Exception as e:
+            logger.exception(e)
 
     def get_status(self) -> dict:
         """Get current pipeline status."""

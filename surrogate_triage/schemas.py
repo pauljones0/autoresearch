@@ -229,6 +229,14 @@ class ExtractionQualityRecord:
     def to_dict(self):
         return asdict(self)
 
+    @classmethod
+    def from_dict(cls, data: dict):
+        entry = cls()
+        for k, v in data.items():
+            if hasattr(entry, k):
+                setattr(entry, k, v)
+        return entry
+
 
 # ---------------------------------------------------------------------------
 # Phase 4: Diagnostics-Driven Ingestion

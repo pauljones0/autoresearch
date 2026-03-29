@@ -11,6 +11,10 @@ import statistics
 class DiagnosticsIngestionLinker:
     """Links model diagnostics to paper ingestion relevance scoring."""
 
+    def __init__(self):
+        from .bottleneck_mapper import BottleneckMapper
+        self._mapper = BottleneckMapper()
+
     # Bottleneck detection thresholds
     ATTENTION_ENTROPY_THRESHOLD = 1.0
     GRADIENT_VANISHING_THRESHOLD = 0.01
@@ -128,6 +132,11 @@ class DiagnosticsIngestionLinker:
                         "search_terms": [],
                         "boost_weight": 0.0,
                     })
+
+        # Populate search_terms and boost_weight from BottleneckMapper
+        for c in candidates:
+            c["search_terms"] = self._mapper.get_search_terms(c["bottleneck_type"])
+            c["boost_weight"] = min(c["severity"] * 0.5, 1.0)
 
         # Sort by severity descending, return top 3
         candidates.sort(key=lambda x: x["severity"], reverse=True)
