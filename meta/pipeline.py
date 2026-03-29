@@ -74,8 +74,15 @@ from meta.monitoring.stability import LongTermStabilityMonitor
 class MetaAutoresearchPipeline:
     """Top-level orchestrator for Meta-Autoresearch."""
 
-    def __init__(self, work_dir="."):
+    def __init__(self, work_dir=".",
+                 bandit_pipeline=None, model_scientist_pipeline=None,
+                 surrogate_triage_pipeline=None, gpu_kernel_pipeline=None):
         self.work_dir = work_dir
+        # Sub-layer pipeline refs for cross-layer integration
+        self._bandit_pipeline = bandit_pipeline
+        self._model_scientist_pipeline = model_scientist_pipeline
+        self._surrogate_triage_pipeline = surrogate_triage_pipeline
+        self._gpu_kernel_pipeline = gpu_kernel_pipeline
         self.state_path = os.path.join(work_dir, "meta_state.json")
         self.log_path = os.path.join(work_dir, "meta_log.jsonl")
         self.config_path = os.path.join(work_dir, "meta_config.json")
@@ -181,6 +188,15 @@ class MetaAutoresearchPipeline:
         # Update comparator with actual default config
         self.defaults_comparator = DefaultsVsMetaComparator(
             self.state, default_config, all_params
+        )
+
+        # Build base context with sub-layer pipeline refs
+        self.base_context = MetaContext(
+            bandit_pipeline=self._bandit_pipeline,
+            model_scientist_pipeline=self._model_scientist_pipeline,
+            surrogate_triage_pipeline=self._surrogate_triage_pipeline,
+            gpu_kernel_pipeline=self._gpu_kernel_pipeline,
+            work_dir=self.work_dir,
         )
 
         return self.state

@@ -82,8 +82,13 @@ from .analysis.allocation_comparator import AllocationEfficiencyComparator
 class AdaptiveBanditPipeline:
     """Top-level orchestrator for the Adaptive Bandit with Simulated Annealing."""
 
-    def __init__(self, work_dir: str = "."):
+    def __init__(self, work_dir: str = ".",
+                 model_scientist=None, surrogate_triage=None, gpu_kernels=None):
         self.work_dir = work_dir
+        # Cross-layer pipeline refs for dispatch routing
+        self._model_scientist = model_scientist
+        self._surrogate_triage = surrogate_triage
+        self._gpu_kernels = gpu_kernels
         self.state_path = os.path.join(work_dir, "strategy_state.json")
         self.log_path = os.path.join(work_dir, "bandit_log.jsonl")
         self.journal_path = os.path.join(work_dir, "hypothesis_journal.jsonl")
@@ -211,7 +216,14 @@ class AdaptiveBanditPipeline:
         diagnostics_report=None,
         base_source: str = "",
     ) -> IterationResult:
-        """Execute one bandit iteration."""
+        """Execute one bandit iteration.
+
+        Pipeline refs default to those passed at __init__ if not overridden here.
+        """
+        # Use stored refs as defaults
+        model_scientist_pipeline = model_scientist_pipeline or self._model_scientist
+        surrogate_triage_pipeline = surrogate_triage_pipeline or self._surrogate_triage
+        gpu_kernel_pipeline = gpu_kernel_pipeline or self._gpu_kernels
         # Hot-reload config overrides
         if os.path.exists(self.overrides_path):
             try:

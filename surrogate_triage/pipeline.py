@@ -563,6 +563,29 @@ class SurrogateTriagePipeline:
         except Exception as e:
             logger.exception(e)
 
+    def reload_overrides(self, path: str) -> bool:
+        """Reload configuration overrides from a JSON file.
+
+        Used by meta-optimization layer to propagate config changes.
+        Returns True if overrides were applied.
+        """
+        try:
+            if not os.path.exists(path):
+                return False
+            mtime = os.path.getmtime(path)
+            if mtime <= getattr(self, "_last_override_mtime", 0):
+                return False
+            with open(path) as f:
+                overrides = json.load(f)
+            for k, v in overrides.items():
+                if hasattr(self, k):
+                    setattr(self, k, v)
+            self._last_override_mtime = mtime
+            return True
+        except Exception as e:
+            logger.exception(e)
+            return False
+
     def get_status(self) -> dict:
         """Get current pipeline status."""
         return {

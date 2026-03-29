@@ -487,6 +487,30 @@ class GPUKernelPipeline:
         path = path or os.path.join(self.data_dir, "kernel_dashboard.html")
         return self.dashboard.render_html(path)
 
+    def reload_overrides(self, path: str) -> bool:
+        """Reload configuration overrides from a JSON file.
+
+        Used by meta-optimization layer to propagate config changes.
+        Returns True if overrides were applied.
+        """
+        import json as _json
+        try:
+            if not os.path.exists(path):
+                return False
+            mtime = os.path.getmtime(path)
+            if mtime <= getattr(self, "_last_override_mtime", 0):
+                return False
+            with open(path) as f:
+                overrides = _json.load(f)
+            for k, v in overrides.items():
+                if hasattr(self, k):
+                    setattr(self, k, v)
+            self._last_override_mtime = mtime
+            return True
+        except Exception as e:
+            logger.exception(e)
+            return False
+
     def run_health_audit(self) -> dict:
         """Run cross-system health audit."""
         return self.health_auditor.audit()
