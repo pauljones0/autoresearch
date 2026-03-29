@@ -82,6 +82,7 @@ class KernelIntegrator:
         kernel: GeneratedKernel,
         group_id: str,
         train_source: str,
+        benchmark_speedup: float = None,
     ) -> KernelConfigEntry:
         """Integrate a winning kernel into the active set.
 
@@ -104,7 +105,7 @@ class KernelIntegrator:
             kernel_path=active_path,
             fallback="pytorch",
             verified_at=time.time(),
-            speedup=kernel.block_size / 256.0,  # placeholder, real speedup from benchmark
+            speedup=benchmark_speedup if benchmark_speedup is not None else 0.0,
             verification_report="",
             enabled=True,
         )

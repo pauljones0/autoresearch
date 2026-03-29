@@ -58,8 +58,12 @@ class TritonElementwiseGenerator:
         if "sigmoid" in ops_str and "mul" in ops_str:
             return "silu"
 
-        # Default: fuse whatever elementwise ops are listed
-        return "generic_elementwise"
+        # Unrecognized op chain — refuse to generate a no-op kernel
+        raise ValueError(
+            f"Unrecognized elementwise op chain: {ops_str} "
+            f"(from ops: {target.op_sequence}). "
+            f"Supported patterns: relu_square, rms_norm, softcap_tanh, silu."
+        )
 
     def _generate_kernel_source(
         self, target: KernelTarget, block_size: int, num_warps: int,

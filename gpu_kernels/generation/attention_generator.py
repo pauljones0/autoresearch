@@ -103,12 +103,18 @@ class AttentionKernelGenerator:
                 sin = tl.load(sin_ptr + cos_base + dim_offsets, mask=mask_half, other=0.0).to(tl.float32)
 
                 # Apply RoPE (split-half rotation)
-                # q1, q2 = q[:half], q[half:]
-                # y1 = q1 * cos + q2 * sin
-                # y2 = q1 * (-sin) + q2 * cos
-                # This is a simplified version; full impl needs proper indexing
-                q_out = q  # placeholder for complex indexing
-                k_out = k
+                q1 = tl.load(q_ptr + pid * head_dim + dim_offsets, mask=mask_half, other=0.0).to(tl.float32)
+                q2 = tl.load(q_ptr + pid * head_dim + dim_offsets + half_dim, mask=mask_half, other=0.0).to(tl.float32)
+                k1 = tl.load(k_ptr + pid * head_dim + dim_offsets, mask=mask_half, other=0.0).to(tl.float32)
+                k2 = tl.load(k_ptr + pid * head_dim + dim_offsets + half_dim, mask=mask_half, other=0.0).to(tl.float32)
+
+                q_rot1 = q1 * cos - q2 * sin
+                q_rot2 = q1 * sin + q2 * cos
+                k_rot1 = k1 * cos - k2 * sin
+                k_rot2 = k1 * sin + k2 * cos
+
+                q_out = tl.join(q_rot1, q_rot2)
+                k_out = tl.join(k_rot1, k_rot2)
 
                 # RMSNorm on q and k
                 q_sq = q_out * q_out

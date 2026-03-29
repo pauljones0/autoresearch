@@ -224,20 +224,32 @@ class ExtendedDivergenceValidator:
         return ""
 
     def _run_reference_step(self, step: int, seed: int) -> dict:
-        """Run a reference (PyTorch-only) training step. Placeholder."""
-        return {"loss": 0.0, "grad_norms": {}, "attention_entropy": 0.0}
+        """Run a reference (PyTorch-only) training step."""
+        raise NotImplementedError(
+            "_run_reference_step requires a real training harness. "
+            "Override in a subclass with access to model and data."
+        )
 
     def _run_kernel_step(self, step: int, seed: int, kernels: dict) -> dict:
-        """Run a kernel-enabled training step. Placeholder."""
-        return {"loss": 0.0, "grad_norms": {}, "attention_entropy": 0.0}
+        """Run a kernel-enabled training step."""
+        raise NotImplementedError(
+            "_run_kernel_step requires a real training harness. "
+            "Override in a subclass with access to model, data, and kernels."
+        )
 
     def _get_reference_params(self, seed: int) -> dict:
-        """Get reference model parameters after training. Placeholder."""
-        return {}
+        """Get reference model parameters after training."""
+        raise NotImplementedError(
+            "_get_reference_params requires access to model state_dict. "
+            "Override in a subclass."
+        )
 
     def _get_kernel_params(self, seed: int, kernels: dict) -> dict:
-        """Get kernel model parameters after training. Placeholder."""
-        return {}
+        """Get kernel model parameters after training."""
+        raise NotImplementedError(
+            "_get_kernel_params requires access to model state_dict. "
+            "Override in a subclass."
+        )
 
     def _compare_params(self, ref: dict, kernel: dict, atol: float) -> dict:
         """Compare parameter dictionaries."""

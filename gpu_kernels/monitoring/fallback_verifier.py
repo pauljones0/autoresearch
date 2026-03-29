@@ -88,13 +88,11 @@ class FallbackIntegrityVerifier:
         return result
 
     def _run_fallback_step(self, step: int, config: dict) -> dict:
-        """
-        Run a single training step with fallback config.
-
-        In real implementation, initializes model with config and runs
-        one forward+backward pass.
-        """
-        return {"loss": 0.0}
+        """Run a single training step with fallback config."""
+        raise NotImplementedError(
+            "_run_fallback_step requires a real training harness. "
+            "Override in a subclass with access to model and data."
+        )
 
     def _load_baseline_losses(self, kernel_id: str) -> list:
         """Load baseline loss trajectory for comparison."""
