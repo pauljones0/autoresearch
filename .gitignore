@@ -21,3 +21,14 @@ dev/
 
 # Results file
 results.tsv
+
+# Local runtime state and tool artifacts
+.superpowers/
+bandit_log.jsonl
+strategy_state.json
+hypothesis_journal.jsonl
+evaluation_queue.json
+kernel_config.json
+bandit_overrides.json
+meta_state.json
+meta_log.jsonl
